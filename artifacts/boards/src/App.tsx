@@ -10,6 +10,12 @@ import Teams from "@/pages/teams";
 import Practices from "@/pages/practices";
 import Games from "@/pages/games";
 import Scouting from "@/pages/scouting";
+import PlayerLab from "@/pages/player-lab";
+import PracticeEngine from "@/pages/practice-engine";
+import GamePrep from "@/pages/game-prep";
+import FilmRoom from "@/pages/film-room";
+import CompetitiveIQ from "@/pages/competitive-iq";
+import RecruitingBoard from "@/pages/recruiting";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +36,12 @@ function Router() {
         <Route path="/practices" component={Practices} />
         <Route path="/games" component={Games} />
         <Route path="/scouting" component={Scouting} />
+        <Route path="/player-lab" component={PlayerLab} />
+        <Route path="/practice-engine" component={PracticeEngine} />
+        <Route path="/game-prep" component={GamePrep} />
+        <Route path="/film-room" component={FilmRoom} />
+        <Route path="/competitive-iq" component={CompetitiveIQ} />
+        <Route path="/recruiting" component={RecruitingBoard} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>
