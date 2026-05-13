@@ -10,6 +10,8 @@ import {
   UpdateGameBody,
   UpdateGameResponse,
 } from "@workspace/api-zod";
+import { logger } from "../lib/logger";
+import { safeValidationError } from "../lib/sanitize";
 
 const router: IRouter = Router();
 
@@ -21,7 +23,7 @@ function serializeGame(g: typeof gamesTable.$inferSelect) {
   };
 }
 
-router.get("/games", async (req, res): Promise<void> => {
+router.get("/games", async (_req, res): Promise<void> => {
   const games = await db.select().from(gamesTable).orderBy(gamesTable.scheduledAt);
   res.json(ListGamesResponse.parse(games.map(serializeGame)));
 });
@@ -29,7 +31,7 @@ router.get("/games", async (req, res): Promise<void> => {
 router.post("/games", async (req, res): Promise<void> => {
   const parsed = CreateGameBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    res.status(400).json({ error: safeValidationError(parsed.error) });
     return;
   }
   const data = {
@@ -45,12 +47,12 @@ router.post("/games", async (req, res): Promise<void> => {
 router.get("/games/:id", async (req, res): Promise<void> => {
   const params = GetGameParams.safeParse(req.params);
   if (!params.success) {
-    res.status(400).json({ error: params.error.message });
+    res.status(400).json({ error: safeValidationError(params.error) });
     return;
   }
   const [game] = await db.select().from(gamesTable).where(eq(gamesTable.id, params.data.id));
   if (!game) {
-    res.status(404).json({ error: "Game not found" });
+    res.status(404).json({ error: "Game not found." });
     return;
   }
   res.json(GetGameResponse.parse(serializeGame(game)));
@@ -59,12 +61,12 @@ router.get("/games/:id", async (req, res): Promise<void> => {
 router.patch("/games/:id", async (req, res): Promise<void> => {
   const params = UpdateGameParams.safeParse(req.params);
   if (!params.success) {
-    res.status(400).json({ error: params.error.message });
+    res.status(400).json({ error: safeValidationError(params.error) });
     return;
   }
   const parsed = UpdateGameBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    res.status(400).json({ error: safeValidationError(parsed.error) });
     return;
   }
   const updateData: Record<string, unknown> = { ...parsed.data };
@@ -73,7 +75,7 @@ router.patch("/games/:id", async (req, res): Promise<void> => {
   }
   const [game] = await db.update(gamesTable).set(updateData).where(eq(gamesTable.id, params.data.id)).returning();
   if (!game) {
-    res.status(404).json({ error: "Game not found" });
+    res.status(404).json({ error: "Game not found." });
     return;
   }
   res.json(UpdateGameResponse.parse(serializeGame(game)));

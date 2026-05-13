@@ -11,6 +11,8 @@ import {
   UpdateScoutingReportResponse,
   DeleteScoutingReportParams,
 } from "@workspace/api-zod";
+import { logger } from "../lib/logger";
+import { safeValidationError } from "../lib/sanitize";
 
 const router: IRouter = Router();
 
@@ -22,7 +24,7 @@ function serializeReport(r: typeof scoutingReportsTable.$inferSelect) {
   };
 }
 
-router.get("/scouting-reports", async (req, res): Promise<void> => {
+router.get("/scouting-reports", async (_req, res): Promise<void> => {
   const reports = await db.select().from(scoutingReportsTable).orderBy(scoutingReportsTable.createdAt);
   res.json(ListScoutingReportsResponse.parse(reports.map(serializeReport)));
 });
@@ -30,7 +32,7 @@ router.get("/scouting-reports", async (req, res): Promise<void> => {
 router.post("/scouting-reports", async (req, res): Promise<void> => {
   const parsed = CreateScoutingReportBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    res.status(400).json({ error: safeValidationError(parsed.error) });
     return;
   }
   const data = {
@@ -44,12 +46,12 @@ router.post("/scouting-reports", async (req, res): Promise<void> => {
 router.get("/scouting-reports/:id", async (req, res): Promise<void> => {
   const params = GetScoutingReportParams.safeParse(req.params);
   if (!params.success) {
-    res.status(400).json({ error: params.error.message });
+    res.status(400).json({ error: safeValidationError(params.error) });
     return;
   }
   const [report] = await db.select().from(scoutingReportsTable).where(eq(scoutingReportsTable.id, params.data.id));
   if (!report) {
-    res.status(404).json({ error: "Scouting report not found" });
+    res.status(404).json({ error: "Scouting report not found." });
     return;
   }
   res.json(GetScoutingReportResponse.parse(serializeReport(report)));
@@ -58,12 +60,12 @@ router.get("/scouting-reports/:id", async (req, res): Promise<void> => {
 router.patch("/scouting-reports/:id", async (req, res): Promise<void> => {
   const params = UpdateScoutingReportParams.safeParse(req.params);
   if (!params.success) {
-    res.status(400).json({ error: params.error.message });
+    res.status(400).json({ error: safeValidationError(params.error) });
     return;
   }
   const parsed = UpdateScoutingReportBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    res.status(400).json({ error: safeValidationError(parsed.error) });
     return;
   }
   const updateData: Record<string, unknown> = { ...parsed.data };
@@ -72,7 +74,7 @@ router.patch("/scouting-reports/:id", async (req, res): Promise<void> => {
   }
   const [report] = await db.update(scoutingReportsTable).set(updateData).where(eq(scoutingReportsTable.id, params.data.id)).returning();
   if (!report) {
-    res.status(404).json({ error: "Scouting report not found" });
+    res.status(404).json({ error: "Scouting report not found." });
     return;
   }
   res.json(UpdateScoutingReportResponse.parse(serializeReport(report)));
@@ -81,12 +83,12 @@ router.patch("/scouting-reports/:id", async (req, res): Promise<void> => {
 router.delete("/scouting-reports/:id", async (req, res): Promise<void> => {
   const params = DeleteScoutingReportParams.safeParse(req.params);
   if (!params.success) {
-    res.status(400).json({ error: params.error.message });
+    res.status(400).json({ error: safeValidationError(params.error) });
     return;
   }
   const [report] = await db.delete(scoutingReportsTable).where(eq(scoutingReportsTable.id, params.data.id)).returning();
   if (!report) {
-    res.status(404).json({ error: "Scouting report not found" });
+    res.status(404).json({ error: "Scouting report not found." });
     return;
   }
   res.sendStatus(204);

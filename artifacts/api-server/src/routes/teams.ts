@@ -11,6 +11,8 @@ import {
   UpdateTeamResponse,
   DeleteTeamParams,
 } from "@workspace/api-zod";
+import { logger } from "../lib/logger";
+import { safeValidationError } from "../lib/sanitize";
 
 const router: IRouter = Router();
 
@@ -18,31 +20,30 @@ function serializeTeam(t: typeof teamsTable.$inferSelect) {
   return { ...t, createdAt: t.createdAt.toISOString() };
 }
 
-router.get("/teams", async (req, res): Promise<void> => {
-  const teams = await db.select().from(teamsTable).orderBy(teamsTable.createdAt);
+router.get("/teams", async (_req, res): Promise<void> => {
+  const teams = await db.select().from(teamsTable).orderBy(teamsTable.name);
   res.json(ListTeamsResponse.parse(teams.map(serializeTeam)));
 });
 
 router.post("/teams", async (req, res): Promise<void> => {
   const parsed = CreateTeamBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    res.status(400).json({ error: safeValidationError(parsed.error) });
     return;
   }
-  const data = { ...parsed.data, record: parsed.data.record ?? "0-0" };
-  const [team] = await db.insert(teamsTable).values(data).returning();
+  const [team] = await db.insert(teamsTable).values(parsed.data).returning();
   res.status(201).json(GetTeamResponse.parse(serializeTeam(team)));
 });
 
 router.get("/teams/:id", async (req, res): Promise<void> => {
   const params = GetTeamParams.safeParse(req.params);
   if (!params.success) {
-    res.status(400).json({ error: params.error.message });
+    res.status(400).json({ error: safeValidationError(params.error) });
     return;
   }
   const [team] = await db.select().from(teamsTable).where(eq(teamsTable.id, params.data.id));
   if (!team) {
-    res.status(404).json({ error: "Team not found" });
+    res.status(404).json({ error: "Team not found." });
     return;
   }
   res.json(GetTeamResponse.parse(serializeTeam(team)));
@@ -51,17 +52,17 @@ router.get("/teams/:id", async (req, res): Promise<void> => {
 router.patch("/teams/:id", async (req, res): Promise<void> => {
   const params = UpdateTeamParams.safeParse(req.params);
   if (!params.success) {
-    res.status(400).json({ error: params.error.message });
+    res.status(400).json({ error: safeValidationError(params.error) });
     return;
   }
   const parsed = UpdateTeamBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    res.status(400).json({ error: safeValidationError(parsed.error) });
     return;
   }
   const [team] = await db.update(teamsTable).set(parsed.data).where(eq(teamsTable.id, params.data.id)).returning();
   if (!team) {
-    res.status(404).json({ error: "Team not found" });
+    res.status(404).json({ error: "Team not found." });
     return;
   }
   res.json(UpdateTeamResponse.parse(serializeTeam(team)));
@@ -70,12 +71,12 @@ router.patch("/teams/:id", async (req, res): Promise<void> => {
 router.delete("/teams/:id", async (req, res): Promise<void> => {
   const params = DeleteTeamParams.safeParse(req.params);
   if (!params.success) {
-    res.status(400).json({ error: params.error.message });
+    res.status(400).json({ error: safeValidationError(params.error) });
     return;
   }
   const [team] = await db.delete(teamsTable).where(eq(teamsTable.id, params.data.id)).returning();
   if (!team) {
-    res.status(404).json({ error: "Team not found" });
+    res.status(404).json({ error: "Team not found." });
     return;
   }
   res.sendStatus(204);
