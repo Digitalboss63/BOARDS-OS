@@ -6,6 +6,7 @@ import practicesRouter from "./practices";
 import gamesRouter from "./games";
 import scoutingReportsRouter from "./scouting-reports";
 import dashboardRouter from "./dashboard";
+import systemRouter from "./system";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(practicesRouter);
 router.use(gamesRouter);
 router.use(scoutingReportsRouter);
 router.use(dashboardRouter);
+router.use(systemRouter);
 
 export default router;
