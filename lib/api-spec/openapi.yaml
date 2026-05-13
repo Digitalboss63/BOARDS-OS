@@ -3,20 +3,32 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: BOARDS - Basketball Operations, Analysis & R&D System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: players
+    description: Player management
+  - name: teams
+    description: Team management
+  - name: practices
+    description: Practice planning
+  - name: games
+    description: Game management
+  - name: scouting
+    description: Opponent scouting
+  - name: dashboard
+    description: Dashboard aggregates
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +36,488 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ── PLAYERS ──────────────────────────────────────────────────────────────────
+  /players:
+    get:
+      operationId: listPlayers
+      tags: [players]
+      summary: List all players
+      responses:
+        "200":
+          description: Players list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+    post:
+      operationId: createPlayer
+      tags: [players]
+      summary: Add a player
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+
+  /players/{id}:
+    get:
+      operationId: getPlayer
+      tags: [players]
+      summary: Get player by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Player
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+        "404":
+          description: Not found
+    patch:
+      operationId: updatePlayer
+      tags: [players]
+      summary: Update a player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+    delete:
+      operationId: deletePlayer
+      tags: [players]
+      summary: Delete a player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # ── TEAMS ──────────────────────────────────────────────────────────────────
+  /teams:
+    get:
+      operationId: listTeams
+      tags: [teams]
+      summary: List all teams
+      responses:
+        "200":
+          description: Teams list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Team"
+    post:
+      operationId: createTeam
+      tags: [teams]
+      summary: Create a team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+
+  /teams/{id}:
+    get:
+      operationId: getTeam
+      tags: [teams]
+      summary: Get team by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateTeam
+      tags: [teams]
+      summary: Update a team
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+    delete:
+      operationId: deleteTeam
+      tags: [teams]
+      summary: Delete a team
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # ── PRACTICES ──────────────────────────────────────────────────────────────
+  /practices:
+    get:
+      operationId: listPractices
+      tags: [practices]
+      summary: List all practices
+      responses:
+        "200":
+          description: Practice plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Practice"
+    post:
+      operationId: createPractice
+      tags: [practices]
+      summary: Create a practice plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PracticeInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Practice"
+
+  /practices/{id}:
+    get:
+      operationId: getPractice
+      tags: [practices]
+      summary: Get practice by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Practice
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Practice"
+        "404":
+          description: Not found
+    patch:
+      operationId: updatePractice
+      tags: [practices]
+      summary: Update a practice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PracticeUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Practice"
+    delete:
+      operationId: deletePractice
+      tags: [practices]
+      summary: Delete a practice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # ── GAMES ────────────────────────────────────────────────────────────────────
+  /games:
+    get:
+      operationId: listGames
+      tags: [games]
+      summary: List all games
+      responses:
+        "200":
+          description: Games list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Game"
+    post:
+      operationId: createGame
+      tags: [games]
+      summary: Create a game record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GameInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+
+  /games/{id}:
+    get:
+      operationId: getGame
+      tags: [games]
+      summary: Get game by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Game
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateGame
+      tags: [games]
+      summary: Update a game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GameUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+
+  # ── SCOUTING REPORTS ─────────────────────────────────────────────────────────
+  /scouting-reports:
+    get:
+      operationId: listScoutingReports
+      tags: [scouting]
+      summary: List scouting reports
+      responses:
+        "200":
+          description: Reports list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScoutingReport"
+    post:
+      operationId: createScoutingReport
+      tags: [scouting]
+      summary: Create a scouting report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScoutingReportInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScoutingReport"
+
+  /scouting-reports/{id}:
+    get:
+      operationId: getScoutingReport
+      tags: [scouting]
+      summary: Get scouting report by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScoutingReport"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateScoutingReport
+      tags: [scouting]
+      summary: Update a scouting report
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScoutingReportUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScoutingReport"
+    delete:
+      operationId: deleteScoutingReport
+      tags: [scouting]
+      summary: Delete a scouting report
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # ── DASHBOARD ─────────────────────────────────────────────────────────────────
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get program summary stats
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/upcoming:
+    get:
+      operationId: getUpcomingEvents
+      tags: [dashboard]
+      summary: Get upcoming games and practices
+      responses:
+        "200":
+          description: Upcoming events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UpcomingEvent"
+
+  /dashboard/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Get recent program activity feed
+      responses:
+        "200":
+          description: Activity feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +525,245 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    # ── PLAYER ──────────────────────────────────────────────────────────────────
+    Player:
+      type: object
+      required: [id, firstName, lastName, position, jerseyNumber, teamId, status, createdAt]
+      properties:
+        id:            { type: integer }
+        firstName:     { type: string }
+        lastName:      { type: string }
+        position:      { type: string }
+        jerseyNumber:  { type: integer }
+        teamId:        { type: integer }
+        height:        { type: ["string", "null"] }
+        weight:        { type: ["integer", "null"] }
+        graduationYear: { type: ["integer", "null"] }
+        status:        { type: string }
+        notes:         { type: ["string", "null"] }
+        createdAt:     { type: string }
+
+    PlayerInput:
+      type: object
+      required: [firstName, lastName, position, jerseyNumber, teamId]
+      properties:
+        firstName:     { type: string, minLength: 1 }
+        lastName:      { type: string, minLength: 1 }
+        position:      { type: string }
+        jerseyNumber:  { type: integer }
+        teamId:        { type: integer }
+        height:        { type: string }
+        weight:        { type: integer }
+        graduationYear: { type: integer }
+        status:        { type: string }
+        notes:         { type: string }
+
+    PlayerUpdate:
+      type: object
+      properties:
+        firstName:     { type: string, minLength: 1 }
+        lastName:      { type: string, minLength: 1 }
+        position:      { type: string }
+        jerseyNumber:  { type: integer }
+        teamId:        { type: integer }
+        height:        { type: string }
+        weight:        { type: integer }
+        graduationYear: { type: integer }
+        status:        { type: string }
+        notes:         { type: string }
+
+    # ── TEAM ────────────────────────────────────────────────────────────────────
+    Team:
+      type: object
+      required: [id, name, level, season, record, createdAt]
+      properties:
+        id:         { type: integer }
+        name:       { type: string }
+        level:      { type: string }
+        season:     { type: string }
+        record:     { type: string }
+        coachName:  { type: ["string", "null"] }
+        notes:      { type: ["string", "null"] }
+        createdAt:  { type: string }
+
+    TeamInput:
+      type: object
+      required: [name, level, season]
+      properties:
+        name:       { type: string, minLength: 1 }
+        level:      { type: string }
+        season:     { type: string }
+        record:     { type: string }
+        coachName:  { type: string }
+        notes:      { type: string }
+
+    TeamUpdate:
+      type: object
+      properties:
+        name:       { type: string, minLength: 1 }
+        level:      { type: string }
+        season:     { type: string }
+        record:     { type: string }
+        coachName:  { type: string }
+        notes:      { type: string }
+
+    # ── PRACTICE ────────────────────────────────────────────────────────────────
+    Practice:
+      type: object
+      required: [id, teamId, scheduledAt, durationMinutes, focus, status, createdAt]
+      properties:
+        id:               { type: integer }
+        teamId:           { type: integer }
+        scheduledAt:      { type: string }
+        durationMinutes:  { type: integer }
+        focus:            { type: string }
+        drills:           { type: ["string", "null"] }
+        notes:            { type: ["string", "null"] }
+        status:           { type: string }
+        createdAt:        { type: string }
+
+    PracticeInput:
+      type: object
+      required: [teamId, scheduledAt, durationMinutes, focus]
+      properties:
+        teamId:           { type: integer }
+        scheduledAt:      { type: string }
+        durationMinutes:  { type: integer }
+        focus:            { type: string }
+        drills:           { type: string }
+        notes:            { type: string }
+        status:           { type: string }
+
+    PracticeUpdate:
+      type: object
+      properties:
+        scheduledAt:      { type: string }
+        durationMinutes:  { type: integer }
+        focus:            { type: string }
+        drills:           { type: string }
+        notes:            { type: string }
+        status:           { type: string }
+
+    # ── GAME ────────────────────────────────────────────────────────────────────
+    Game:
+      type: object
+      required: [id, teamId, opponent, scheduledAt, location, result, createdAt]
+      properties:
+        id:           { type: integer }
+        teamId:       { type: integer }
+        opponent:     { type: string }
+        scheduledAt:  { type: string }
+        location:     { type: string }
+        isHome:       { type: boolean }
+        result:       { type: string }
+        scoreUs:      { type: ["integer", "null"] }
+        scoreThem:    { type: ["integer", "null"] }
+        notes:        { type: ["string", "null"] }
+        createdAt:    { type: string }
+
+    GameInput:
+      type: object
+      required: [teamId, opponent, scheduledAt, location]
+      properties:
+        teamId:       { type: integer }
+        opponent:     { type: string, minLength: 1 }
+        scheduledAt:  { type: string }
+        location:     { type: string }
+        isHome:       { type: boolean }
+        result:       { type: string }
+        scoreUs:      { type: integer }
+        scoreThem:    { type: integer }
+        notes:        { type: string }
+
+    GameUpdate:
+      type: object
+      properties:
+        opponent:     { type: string, minLength: 1 }
+        scheduledAt:  { type: string }
+        location:     { type: string }
+        isHome:       { type: boolean }
+        result:       { type: string }
+        scoreUs:      { type: integer }
+        scoreThem:    { type: integer }
+        notes:        { type: string }
+
+    # ── SCOUTING REPORT ─────────────────────────────────────────────────────────
+    ScoutingReport:
+      type: object
+      required: [id, opponentName, teamId, createdAt]
+      properties:
+        id:              { type: integer }
+        teamId:          { type: integer }
+        opponentName:    { type: string }
+        gameDate:        { type: ["string", "null"] }
+        offensiveSystem: { type: ["string", "null"] }
+        defensiveSystem: { type: ["string", "null"] }
+        keyPlayers:      { type: ["string", "null"] }
+        strengths:       { type: ["string", "null"] }
+        weaknesses:      { type: ["string", "null"] }
+        adjustments:     { type: ["string", "null"] }
+        notes:           { type: ["string", "null"] }
+        createdAt:       { type: string }
+
+    ScoutingReportInput:
+      type: object
+      required: [teamId, opponentName]
+      properties:
+        teamId:          { type: integer }
+        opponentName:    { type: string, minLength: 1 }
+        gameDate:        { type: string }
+        offensiveSystem: { type: string }
+        defensiveSystem: { type: string }
+        keyPlayers:      { type: string }
+        strengths:       { type: string }
+        weaknesses:      { type: string }
+        adjustments:     { type: string }
+        notes:           { type: string }
+
+    ScoutingReportUpdate:
+      type: object
+      properties:
+        opponentName:    { type: string, minLength: 1 }
+        gameDate:        { type: string }
+        offensiveSystem: { type: string }
+        defensiveSystem: { type: string }
+        keyPlayers:      { type: string }
+        strengths:       { type: string }
+        weaknesses:      { type: string }
+        adjustments:     { type: string }
+        notes:           { type: string }
+
+    # ── DASHBOARD ───────────────────────────────────────────────────────────────
+    DashboardSummary:
+      type: object
+      required: [totalPlayers, totalTeams, upcomingPractices, upcomingGames, totalWins, totalLosses, scoutingReports]
+      properties:
+        totalPlayers:       { type: integer }
+        totalTeams:         { type: integer }
+        upcomingPractices:  { type: integer }
+        upcomingGames:      { type: integer }
+        totalWins:          { type: integer }
+        totalLosses:        { type: integer }
+        scoutingReports:    { type: integer }
+
+    UpcomingEvent:
+      type: object
+      required: [id, type, title, scheduledAt, teamName]
+      properties:
+        id:           { type: integer }
+        type:         { type: string }
+        title:        { type: string }
+        scheduledAt:  { type: string }
+        teamName:     { type: string }
+        location:     { type: ["string", "null"] }
+
+    ActivityItem:
+      type: object
+      required: [id, type, description, createdAt]
+      properties:
+        id:           { type: integer }
+        type:         { type: string }
+        description:  { type: string }
+        createdAt:    { type: string }

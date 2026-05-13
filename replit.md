@@ -1,10 +1,11 @@
-# [Project name]
+# BOARDS
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Basketball Operations, Analysis & R&D System — an AI-powered basketball intelligence and program management platform for coaches, programs, and organizations.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
+- `pnpm --filter @workspace/boards run dev` — run the frontend (auto-assigned port)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
@@ -14,6 +15,7 @@ _Replace the heading above with the project's name, and this line with one sente
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
+- Frontend: React + Vite + wouter + shadcn/ui + Tailwind CSS
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
@@ -22,23 +24,34 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/api-spec/openapi.yaml` — API contract (source of truth)
+- `lib/db/src/schema/` — Drizzle table definitions (teams, players, practices, games, scouting-reports)
+- `artifacts/api-server/src/routes/` — Express route handlers
+- `artifacts/boards/src/pages/` — Frontend pages
+- `artifacts/boards/src/index.css` — Theme (dark film-room palette)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Contract-first OpenAPI spec drives Zod validation schemas (server) and React Query hooks (client) via Orval codegen
+- Dark mode only — film-room aesthetic with charcoal/graphite palette and burnt orange accents
+- Dashboard activity feed uses sequential IDs to avoid React key collisions across entity types
+- Dates stored as timestamptz throughout
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+BOARDS is a basketball intelligence platform for AAU, high school, trainers, and academies. Core modules: Command Center dashboard, Roster Management, Team Management, Practice Planner, Game Log, and Scouting Intel.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Design: Film-room energy. Dark charcoal + graphite + burnt orange accents (sparingly). Clean ESPN/Nike analytics aesthetic. NOT a fan app — intelligent, tactical, elite, understated.
+- No emojis anywhere in the UI
+- Basketball identity should feel like "NBA front office meets elite high school program"
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- After each OpenAPI spec change, run codegen before writing routes: `pnpm --filter @workspace/api-spec run codegen`
+- Activity feed IDs are synthesized (sequential counter) since games/players/practices all have overlapping DB IDs starting from 1
+- Seed dates must be in the future relative to current date for dashboard upcoming events to show
 
 ## Pointers
 
