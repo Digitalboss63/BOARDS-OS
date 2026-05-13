@@ -12,6 +12,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { SystemHealthBadge } from "@/components/system-health-badge";
 
 type Severity = "WARNING" | "ALERT" | "INFO" | "POSITIVE";
 
@@ -208,6 +209,14 @@ export default function CompetitiveIQ() {
               </p>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Platform Status — discreet, coach-friendly */}
+      <Card className="border-border/30 bg-card/30">
+        <CardContent className="p-4">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">Platform Status</p>
+          <SystemHealthBadge />
         </CardContent>
       </Card>
     </div>

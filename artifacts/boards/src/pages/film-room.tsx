@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Film, Clapperboard, FileText, ChevronRight } from "lucide-react";
+import { trackFeature } from "@/lib/boards-api";
 
 interface SavedNote {
   label: string;
@@ -92,7 +93,12 @@ export default function FilmRoom() {
             <div className="flex justify-end">
               <Button
                 disabled={!filmNotes.trim()}
-                onClick={() => setShowPlan(true)}
+                onClick={() => {
+                  setShowPlan(true);
+                  trackFeature("film_room.action_plan_generated", "Film notes converted to action plan", {
+                    hasLabel: !!gameLabel.trim(),
+                  });
+                }}
                 className="font-display uppercase tracking-wider font-semibold"
               >
                 <Film className="mr-2 h-4 w-4" />

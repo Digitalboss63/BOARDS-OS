@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { useListPractices, useListTeams } from "@workspace/api-client-react";
+import { trackFeature } from "@/lib/boards-api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -198,7 +199,14 @@ export default function PracticeEngine() {
 
               <div className="flex justify-end">
                 <Button
-                  onClick={() => setShowPlan(true)}
+                  onClick={() => {
+                    setShowPlan(true);
+                    trackFeature("practice_engine.plan_generated", "Practice plan generated", {
+                      focusArea,
+                      teamLevel,
+                      practiceLength,
+                    });
+                  }}
                   className="font-display uppercase tracking-wider font-semibold"
                 >
                   <Zap className="mr-2 h-4 w-4" />

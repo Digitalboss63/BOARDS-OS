@@ -4,8 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, FlaskConical } from "lucide-react";
+import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { StaffNotesPanel } from "@/components/staff-notes-panel";
 
 type Readiness = "READY" | "DEVELOPING" | "BUILDING";
 
@@ -58,17 +59,15 @@ const DEFAULT_PROFILE: DevProfile = {
 
 function getReadinessBadgeClass(readiness: Readiness): string {
   switch (readiness) {
-    case "READY":
-      return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
-    case "DEVELOPING":
-      return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-    case "BUILDING":
-      return "bg-muted/60 text-muted-foreground border-border";
+    case "READY":      return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+    case "DEVELOPING": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+    case "BUILDING":   return "bg-muted/60 text-muted-foreground border-border";
   }
 }
 
 export default function PlayerLab() {
   const [search, setSearch] = useState("");
+  const [expandedId, setExpandedId] = useState<number | null>(null);
 
   const { data: players, isLoading } = useListPlayers();
   const { data: teams } = useListTeams();
@@ -84,7 +83,7 @@ export default function PlayerLab() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-display font-bold uppercase tracking-wide text-foreground">Player Lab</h1>
-        <p className="text-muted-foreground mt-1">Individual development profiles and readiness tracking.</p>
+        <p className="text-muted-foreground mt-1">Individual development profiles and coaching notes.</p>
       </div>
 
       {/* Search */}
@@ -101,18 +100,16 @@ export default function PlayerLab() {
       {/* Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array(6)
-            .fill(0)
-            .map((_, i) => (
-              <Card key={i} className="border-border/50 bg-card/50">
-                <CardContent className="p-6">
-                  <Skeleton className="h-10 w-16 mb-3" />
-                  <Skeleton className="h-5 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2 mb-4" />
-                  <Skeleton className="h-24 w-full" />
-                </CardContent>
-              </Card>
-            ))}
+          {Array(6).fill(0).map((_, i) => (
+            <Card key={i} className="border-border/50 bg-card/50">
+              <CardContent className="p-6">
+                <Skeleton className="h-10 w-16 mb-3" />
+                <Skeleton className="h-5 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2 mb-4" />
+                <Skeleton className="h-24 w-full" />
+              </CardContent>
+            </Card>
+          ))}
         </div>
       ) : filtered?.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground bg-card/30 rounded-lg border border-border/50 border-dashed">
@@ -124,14 +121,19 @@ export default function PlayerLab() {
             const team = teams?.find((t) => t.id === player.teamId);
             const pos = player.position || "";
             const profile = DEV_PROFILES[pos] ?? DEFAULT_PROFILE;
+            const isExpanded = expandedId === player.id;
+            const fullName = `${player.firstName} ${player.lastName}`;
 
             return (
               <Card
                 key={player.id}
-                className="border-border/50 bg-card/50 hover:border-primary/50 transition-colors"
+                className={cn(
+                  "border-border/50 bg-card/50 hover:border-primary/50 transition-colors",
+                  isExpanded && "border-primary/40"
+                )}
               >
                 <CardContent className="p-6">
-                  {/* Header: jersey + name + position */}
+                  {/* Header */}
                   <div className="flex items-start gap-4 mb-4">
                     <div className="text-5xl font-display font-bold text-primary/30 leading-none min-w-[3rem] text-right">
                       {player.jerseyNumber != null ? `#${player.jerseyNumber}` : "#—"}
@@ -156,36 +158,44 @@ export default function PlayerLab() {
                   {/* Dev Profile */}
                   <div className="space-y-3 border-t border-border/50 pt-4">
                     <div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">
-                        Strengths
-                      </p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Strengths</p>
                       <p className="text-sm text-foreground">{profile.strengths}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">
-                        Dev Priority
-                      </p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Dev Priority</p>
                       <p className="text-sm text-foreground">{profile.devPriority}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                        Readiness
-                      </p>
-                      <span
-                        className={cn(
-                          "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border",
-                          getReadinessBadgeClass(profile.readiness)
-                        )}
-                      >
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Readiness</p>
+                      <span className={cn(
+                        "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border",
+                        getReadinessBadgeClass(profile.readiness)
+                      )}>
                         {profile.readiness}
                       </span>
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">
-                        Next Action
-                      </p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Next Action</p>
                       <p className="text-sm italic text-muted-foreground">{profile.nextAction}</p>
                     </div>
+                  </div>
+
+                  {/* Staff Notes — toggle */}
+                  <div className="mt-4 border-t border-border/50 pt-3">
+                    <button
+                      className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest hover:text-primary transition-colors"
+                      onClick={() => setExpandedId(isExpanded ? null : player.id)}
+                    >
+                      {isExpanded ? "▲ Hide Notes" : "▼ Coaching Notes"}
+                    </button>
+                    {isExpanded && (
+                      <StaffNotesPanel
+                        targetType="player"
+                        targetId={player.id}
+                        targetLabel={fullName}
+                        maxHeight="max-h-64"
+                      />
+                    )}
                   </div>
                 </CardContent>
               </Card>
