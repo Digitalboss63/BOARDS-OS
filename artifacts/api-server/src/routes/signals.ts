@@ -15,7 +15,7 @@ import { logger } from "../lib/logger";
 import { safeValidationError } from "../lib/sanitize";
 import { recordSignal, runRecommendationRules } from "../lib/signal-processor";
 import { requireAdmin } from "../lib/program-context";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const router: IRouter = Router();
 

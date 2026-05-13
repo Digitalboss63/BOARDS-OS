@@ -12,7 +12,7 @@ import { db, coachingEventsTable } from "@workspace/db";
 import { desc, eq, and } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { safeValidationError } from "../lib/sanitize";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const router: IRouter = Router();
 
