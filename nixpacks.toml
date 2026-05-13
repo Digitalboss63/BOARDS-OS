@@ -1,0 +1,5 @@
+[phases.install.variables]
+NODE_ENV = "development"
+
+[phases.build.variables]
+NODE_ENV = "development"

@@ -1,0 +1,9 @@
+[build]
+buildCommand = "NODE_ENV=development pnpm install --frozen-lockfile && pnpm --filter @workspace/boards run build && pnpm --filter @workspace/api-server run build"
+startCommand = "node --enable-source-maps artifacts/api-server/dist/index.mjs"
+
+[deploy]
+healthcheckPath = "/api/healthz"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

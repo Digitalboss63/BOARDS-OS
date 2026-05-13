@@ -15,9 +15,9 @@ _Inherits from MASTER-BUILD-PROCESS.md. Project-specific rules below._
 
 ## Build Pipeline
 ```
-Replit → scaffold + validate features
-OC (OpenClaw) → controlled finishing, security hardening, docs
+OC (OpenClaw) → all build and finishing work
 GitHub → source of truth (push after every phase)
+Railway → production deployment target
 ChatGPT → strategy, prompt engineering, debug direction
 ```
 
@@ -61,11 +61,14 @@ ChatGPT → strategy, prompt engineering, debug direction
 - Rate limiting on all public endpoints
 - CORS lock-down for production domain
 
-## Known Replit Artifacts (Remove Before Railway Deploy)
-- `.replit` file — Replit-specific config
-- `artifacts/mockup-sandbox/` — Replit internal tool, not part of the app
-- `REPLIT_DOMAINS`, `REPL_ID` env refs
-- `@replit/vite-plugin-*` — replace with standard Vite setup for Railway
+## Railway Deployment
+- `railway.toml` — build + start commands + health check config
+- `nixpacks.toml` — forces `NODE_ENV=development` during install + build phases
+- Build: installs deps → builds frontend → builds backend
+- Start: `node artifacts/api-server/dist/index.mjs`
+- Health check: `/api/healthz`
+- Frontend served as static files from `artifacts/boards/dist/public`
+- SPA fallback: `/{*path}` → `index.html`
 
 ## Git Workflow
 - `main` = source of truth
