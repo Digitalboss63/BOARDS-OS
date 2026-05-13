@@ -6,6 +6,7 @@ import { requestIdMiddleware } from "./middlewares/request-id";
 import { buildCorsMiddleware } from "./middlewares/cors-config";
 import { apiLimiter } from "./middlewares/rate-limit";
 import { errorBoundary } from "./middlewares/error-boundary";
+import { telemetryMiddleware } from "./middlewares/telemetry";
 
 const app: Express = express();
 
@@ -41,10 +42,13 @@ app.use(express.urlencoded({ extended: true }));
 // ── 5. Rate limiting on all API routes
 app.use("/api", apiLimiter);
 
-// ── 6. Feature routes
+// ── 6. Passive telemetry — fire-and-forget, non-blocking
+app.use(telemetryMiddleware);
+
+// ── 7. Feature routes
 app.use("/api", router);
 
-// ── 7. Error boundary — MUST be last, after all routes
+// ── 8. Error boundary — MUST be last, after all routes
 app.use(errorBoundary);
 
 export default app;

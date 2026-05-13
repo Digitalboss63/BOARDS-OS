@@ -7,6 +7,9 @@ import gamesRouter from "./games";
 import scoutingReportsRouter from "./scouting-reports";
 import dashboardRouter from "./dashboard";
 import systemRouter from "./system";
+import coachingEventsRouter from "./coaching-events";
+import signalsRouter from "./signals";
+import staffNotesRouter from "./staff-notes";
 
 const router: IRouter = Router();
 
@@ -18,5 +21,8 @@ router.use(gamesRouter);
 router.use(scoutingReportsRouter);
 router.use(dashboardRouter);
 router.use(systemRouter);
+router.use(coachingEventsRouter);
+router.use(signalsRouter);
+router.use(staffNotesRouter);
 
 export default router;
