@@ -70,6 +70,22 @@ ChatGPT → strategy, prompt engineering, debug direction
 - Frontend served as static files from `artifacts/boards/dist/public`
 - SPA fallback: `/{*path}` → `index.html`
 
+## Responsive Design — Non-Negotiables
+Every layout component MUST support mobile (≥320px), tablet (≥768px), and desktop (≥1024px).
+
+**Sidebar rule:**
+- Desktop (`md:` and up): fixed sidebar, `pl-64` on main content
+- Mobile (below `md:`): sidebar hidden by default; hamburger button in fixed top bar opens a slide-in drawer with a dark backdrop; tapping backdrop or a nav item closes it
+- **NEVER** use a hardcoded `pl-64` or `w-64 fixed` sidebar without the corresponding mobile drawer pattern
+
+**Layout checklist before every deploy:**
+- [ ] No fixed-width elements that bleed off screen on mobile
+- [ ] `p-4 md:p-8` on main content containers (tighter padding on mobile)
+- [ ] Tables use `overflow-x-auto` wrapper on mobile
+- [ ] Forms stack vertically on mobile (`flex-col md:flex-row`)
+- [ ] Touch targets ≥ 44px height on interactive elements
+- [ ] Test in browser devtools at 390px width (iPhone 14) before pushing
+
 ## Git Workflow
 - `main` = source of truth
 - Push after every phase completion
