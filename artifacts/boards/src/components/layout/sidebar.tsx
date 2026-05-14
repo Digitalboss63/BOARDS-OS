@@ -12,6 +12,7 @@ import {
   Star,
   Shield,
   Trophy,
+  X,
 } from "lucide-react";
 
 type NavItem = {
@@ -59,14 +60,31 @@ const navGroups: NavGroup[] = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ open, onClose }: SidebarProps) {
   const [location] = useLocation();
 
-  return (
-    <div className="w-64 border-r border-border bg-sidebar h-screen flex flex-col fixed left-0 top-0">
-      <div className="p-6 border-b border-border">
-        <h1 className="text-xl font-display font-bold tracking-wider text-primary uppercase">BOARDS</h1>
-        <p className="text-xs text-muted-foreground mt-1 uppercase tracking-widest font-sans font-medium">Ops &amp; Intel</p>
+  const navContent = (
+    <div className="w-64 border-r border-border bg-sidebar h-full flex flex-col">
+      <div className="p-6 border-b border-border flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-display font-bold tracking-wider text-primary uppercase">BOARDS</h1>
+          <p className="text-xs text-muted-foreground mt-1 uppercase tracking-widest font-sans font-medium">Ops &amp; Intel</p>
+        </div>
+        {/* Close button — mobile only */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="md:hidden p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50"
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       <nav className="flex-1 p-4 space-y-5 overflow-y-auto">
@@ -81,6 +99,7 @@ export function Sidebar() {
                 return (
                   <Link key={item.href} href={item.href}>
                     <span
+                      onClick={onClose}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors cursor-pointer",
                         isActive
@@ -108,5 +127,30 @@ export function Sidebar() {
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar — always visible */}
+      <div className="hidden md:flex fixed left-0 top-0 h-screen z-30">
+        {navContent}
+      </div>
+
+      {/* Mobile sidebar — slide-in drawer with backdrop */}
+      {open && (
+        <div className="md:hidden fixed inset-0 z-40 flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={onClose}
+            aria-hidden="true"
+          />
+          {/* Drawer */}
+          <div className="relative z-50 h-full">
+            {navContent}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
